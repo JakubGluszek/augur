@@ -5,14 +5,28 @@ import type { AppType } from "next/dist/shared/lib/utils";
 import superjson from "superjson";
 import { SessionProvider } from "next-auth/react";
 import "../styles/globals.css";
+import { MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
+import { useEffect } from "react";
 
 const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  useEffect(() => {
+    const theme = sessionStorage.getItem("theme")
+    if (theme) {
+      const html = document.querySelector("html")
+      html?.setAttribute("data-theme", theme)
+    }
+  }, [])
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <MantineProvider>
+        <NotificationsProvider>
+          <Component {...pageProps} />
+        </NotificationsProvider>
+      </MantineProvider>
     </SessionProvider>
   );
 };

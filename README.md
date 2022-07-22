@@ -1,3 +1,7 @@
-# Create T3 App
+# Augur
 
-This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
+## TODOS
+
+* [ ] Display countdown to event date on personal prediction
+* [ ] Highlight predictions which events date < now()
+* [ ] Let user know that predictions with event date < now() are not yet visible to other users

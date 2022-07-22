@@ -5,19 +5,22 @@ import Prediction from "./Prediction";
 const PredictionsPersonal: React.FC = () => {
   const q = useGetPersonalPredictions();
 
+  const predictions = q.data?.map(p =>
+    <Prediction
+      key={p.id}
+      data={p}
+      showRemove={true}
+      displayTimeLeft={true}
+    />
+  )
+
   return (
-    <>
-      <p>My predictions</p>
-      <div className="w-full flex flex-col gap-2">
-        {q.data?.map(p =>
-          <Prediction
-            key={p.id}
-            data={p}
-            showRemove={true}
-          />
-        )}
-      </div>
-    </>
+    <div className="w-full flex flex-col items-center gap-2">
+      {q.data && q.data.length > 0
+        ? predictions
+        : <span>soooo eeempty</span>
+      }
+    </div>
   )
 };
 

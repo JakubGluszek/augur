@@ -5,9 +5,9 @@ export const useCreatePrediction = () => {
   const personalQuery = useGetPersonalPredictions();
 
   const mutation = trpc.useMutation(["predictions.create"], {
-    onSuccess: () => {
-      allPastQuery.refetch()
-      personalQuery.refetch()
+    onSuccess: async () => {
+      await allPastQuery.refetch()
+      await personalQuery.refetch()
     }
   })
 
@@ -19,9 +19,9 @@ export const useRemovePrediction = () => {
   const personalQuery = useGetPersonalPredictions();
 
   const mutation = trpc.useMutation(["predictions.remove"], {
-    onSuccess: () => {
-      allPastQuery.refetch()
-      personalQuery.refetch()
+    onSuccess: async () => {
+      await allPastQuery.refetch()
+      await personalQuery.refetch()
     }
   })
 

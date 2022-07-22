@@ -6,11 +6,10 @@ const PredictionsAllPast: React.FC = () => {
   const queryAllPast = useGetAllPastPredictions();
 
   return (
-    <div className="flex flex-col">
-      <p>All Past Predictions</p>
+    <div className="w-full flex flex-col items-center">
       {queryAllPast.data?.pages.map(p =>
         <div
-          className="flex flex-col gap-2"
+          className="w-full flex flex-col gap-2"
           key={p.nextCursor}
         >
           {p.items.map(v =>
@@ -18,6 +17,7 @@ const PredictionsAllPast: React.FC = () => {
               key={v.id}
               data={v}
               showRemove={false}
+              displayTimeLeft={false}
             />
           )}
         </div>
@@ -27,7 +27,7 @@ const PredictionsAllPast: React.FC = () => {
           className="btn btn-ghost"
           onClick={() => queryAllPast.fetchNextPage()}
         >
-          more
+          View more
         </button>
       }
     </div>
