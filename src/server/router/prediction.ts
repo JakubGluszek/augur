@@ -3,7 +3,8 @@ import { z } from "zod";
 import { createRouter } from "./context";
 
 export const predictionRouter = createRouter()
-  .query("all", {
+  // return a paginated response of predictions which eventAt date <= today's date
+  .query("past", {
     input: z.object({
       limit: z.number().min(1).max(100).nullish(),
       cursor: z.string().nullish(),
@@ -11,13 +12,20 @@ export const predictionRouter = createRouter()
     async resolve({ ctx, input }) {
       const limit = input.limit ?? 50;
       const { cursor } = input;
+
       const items = await ctx.prisma.prediction.findMany({
         take: limit + 1,
         cursor: cursor ? { id: cursor } : undefined,
+        where: {
+          eventAt: {
+            lte: new Date()
+          }
+        },
         orderBy: {
           id: "desc",
         },
       })
+
       let nextCursor: typeof cursor | null = null;
       if (items.length > limit) {
         const nextItem = items.pop()
@@ -54,6 +62,11 @@ export const predictionRouter = createRouter()
 
       const eventAt = new Date(utc)
 
+      const today = new Date();
+      if (eventAt < today || eventAt.getUTCDay() === today.getUTCDay()) {
+        throw new TRPCError({ code: "BAD_REQUEST" })
+      }
+
       const prediction = ctx.prisma.prediction.create({
         data: {
           body: input.body,
@@ -65,9 +78,37 @@ export const predictionRouter = createRouter()
       return prediction;
     }
   })
+  .mutation("remove", {
+    input: z.object({
+      id: z.string().cuid()
+    }),
+    async resolve({ ctx, input }) {
+      const prediction = await ctx.prisma.prediction.findFirst({
+        where: {
+          id: input.id,
+          userId: ctx.session?.user?.id
+        }
+      })
+
+      if (!prediction) {
+        throw new TRPCError({ code: "FORBIDDEN" })
+      }
+
+      const removed = await ctx.prisma.prediction.delete({
+        where: {
+          id: input.id
+        },
+        select: {
+          id: true
+        }
+      })
+
+      return removed
+    }
+  })
   .query("personal", {
     async resolve({ ctx }) {
-      const predictions = ctx.prisma.prediction.findMany({
+      const predictions = await ctx.prisma.prediction.findMany({
         where: {
           userId: ctx.session?.user?.id
         },

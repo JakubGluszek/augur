@@ -31,7 +31,7 @@ interface CreateProps {
 }
 
 const PredictionCreate: React.FC<CreateProps> = ({ refetch }) => {
-  const queryAll = useGetAllPredictions()
+  const queryAll = useGetPastPredictions()
 
   const { register, handleSubmit } = useForm();
   const mutate = trpc.useMutation(["predictions.create"], {
@@ -76,6 +76,8 @@ interface PersonalProps {
 }
 
 const PredictionsPersonal: React.FC<PersonalProps> = ({ data }) => {
+  const remove = trpc.useMutation(["predictions.remove"])
+
   return (
     <>
       <p>My predictions</p>
@@ -87,6 +89,7 @@ const PredictionsPersonal: React.FC<PersonalProps> = ({ data }) => {
           >
             <p>{p.userId}</p>
             <p>{p.body}</p>
+            <button onClick={() => remove.mutate({ id: p.id })}>remove</button>
           </div>
         )}
       </div>
@@ -94,10 +97,10 @@ const PredictionsPersonal: React.FC<PersonalProps> = ({ data }) => {
   )
 };
 
-const useGetAllPredictions = () => {
+const useGetPastPredictions = () => {
   const q = trpc.useInfiniteQuery(
     [
-      "predictions.all",
+      "predictions.past",
       {
         limit: 20,
       },
@@ -111,12 +114,13 @@ const useGetAllPredictions = () => {
 }
 
 const PredictionsAll: React.FC = () => {
-  const q = useGetAllPredictions();
+  const queryPast = useGetPastPredictions();
+  const remove = trpc.useMutation(["predictions.remove"])
 
   return (
     <div className="flex flex-col">
       <p>All Predictions</p>
-      {q.data?.pages.map(p =>
+      {queryPast.data?.pages.map(p =>
         <div
           className="flex flex-col gap-2"
           key={p.nextCursor}
@@ -125,16 +129,18 @@ const PredictionsAll: React.FC = () => {
             <div key={v.id}>
               <p>{v.userId}</p>
               <p>{v.body}</p>
+              <button onClick={() => remove.mutate({ id: v.id })}>remove</button>
             </div>
           )}
         </div>
       )}
-      <button
-        className="btn btn-ghost"
-        onClick={() => q.fetchNextPage()}
-      >
-        more
-      </button>
+      {queryPast.hasNextPage &&
+        <button
+          className="btn btn-ghost"
+          onClick={() => queryPast.fetchNextPage()}
+        >
+          more
+        </button>}
     </div>
   )
 }
