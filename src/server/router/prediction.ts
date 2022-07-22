@@ -72,7 +72,7 @@ export const predictionRouter = createRouter()
       const eventAt = new Date(utc)
 
       const today = new Date();
-      if (eventAt < today || eventAt.getUTCDay() === today.getUTCDay()) {
+      if (eventAt < today || eventAt.toDateString() === today.toDateString()) {
         throw new TRPCError({ code: "BAD_REQUEST" })
       }
 
