@@ -31,9 +31,14 @@ interface CreateProps {
 }
 
 const PredictionCreate: React.FC<CreateProps> = ({ refetch }) => {
+  const queryAll = useGetAllPredictions()
+
   const { register, handleSubmit } = useForm();
   const mutate = trpc.useMutation(["predictions.create"], {
-    onSuccess: () => refetch()
+    onSuccess: () => {
+      refetch()
+      queryAll.refetch()
+    }
   })
 
   const onSubmit = handleSubmit(data => {
@@ -89,6 +94,51 @@ const PredictionsPersonal: React.FC<PersonalProps> = ({ data }) => {
   )
 };
 
+const useGetAllPredictions = () => {
+  const q = trpc.useInfiniteQuery(
+    [
+      "predictions.all",
+      {
+        limit: 20,
+      },
+    ],
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    },
+  );
+
+  return q
+}
+
+const PredictionsAll: React.FC = () => {
+  const q = useGetAllPredictions();
+
+  return (
+    <div className="flex flex-col">
+      <p>All Predictions</p>
+      {q.data?.pages.map(p =>
+        <div
+          className="flex flex-col gap-2"
+          key={p.nextCursor}
+        >
+          {p.items.map(v =>
+            <div key={v.id}>
+              <p>{v.userId}</p>
+              <p>{v.body}</p>
+            </div>
+          )}
+        </div>
+      )}
+      <button
+        className="btn btn-ghost"
+        onClick={() => q.fetchNextPage()}
+      >
+        more
+      </button>
+    </div>
+  )
+}
+
 const PredictionsView: React.FC = () => {
   const { data, isLoading, refetch } = trpc.useQuery(["predictions.personal"])
 
@@ -127,6 +177,7 @@ const Home: NextPage = () => {
             : <LoginView />
         }
 
+        <PredictionsAll />
       </div>
     </>
   );

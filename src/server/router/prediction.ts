@@ -3,6 +3,33 @@ import { z } from "zod";
 import { createRouter } from "./context";
 
 export const predictionRouter = createRouter()
+  .query("all", {
+    input: z.object({
+      limit: z.number().min(1).max(100).nullish(),
+      cursor: z.string().nullish(),
+    }),
+    async resolve({ ctx, input }) {
+      const limit = input.limit ?? 50;
+      const { cursor } = input;
+      const items = await ctx.prisma.prediction.findMany({
+        take: limit + 1,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: {
+          id: "desc",
+        },
+      })
+      let nextCursor: typeof cursor | null = null;
+      if (items.length > limit) {
+        const nextItem = items.pop()
+        nextCursor = nextItem!.id;
+      }
+
+      return {
+        items,
+        nextCursor,
+      };
+    }
+  })
   .middleware(async ({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user?.id) {
       throw new TRPCError({ code: "UNAUTHORIZED" })
@@ -43,6 +70,9 @@ export const predictionRouter = createRouter()
       const predictions = ctx.prisma.prediction.findMany({
         where: {
           userId: ctx.session?.user?.id
+        },
+        orderBy: {
+          id: "desc"
         }
       });
 
