@@ -1,163 +1,12 @@
 import React from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useForm } from "react-hook-form";
-import { signIn, useSession } from "next-auth/react";
-import { Prediction } from "@prisma/client";
-import { trpc } from "../utils/trpc";
+import { useSession } from "next-auth/react";
 
-const LoginView = () => {
-  return (
-    <div>
-      <p>Sign in to create a prediction</p>
-      <button
-        className="btn btn-primary"
-        onClick={() => signIn("twitch")}
-      >
-        Twitch
-      </button>
-      <button
-        className="btn btn-primary"
-        onClick={() => signIn("discord")}
-      >
-        Discord
-      </button>
-    </div>
-  )
-};
-
-interface CreateProps {
-  refetch: () => void
-}
-
-const PredictionCreate: React.FC<CreateProps> = ({ refetch }) => {
-  const queryAll = useGetPastPredictions()
-
-  const { register, handleSubmit } = useForm();
-  const mutate = trpc.useMutation(["predictions.create"], {
-    onSuccess: () => {
-      refetch()
-      queryAll.refetch()
-    }
-  })
-
-  const onSubmit = handleSubmit(data => {
-    var date = new Date(data.eventAt);
-    mutate.mutate({ body: data.body, eventAt: date })
-  })
-
-  return (
-    <form
-      className="form-control w-full max-w-sm gap-2"
-      onSubmit={onSubmit}
-    >
-      <textarea
-        className="textarea textarea-bordered"
-        minLength={16}
-        maxLength={256}
-        placeholder="Enter your prediction here"
-        {...register("body", { minLength: 16, maxLength: 256 })}
-      />
-      <input
-        className="input input-bordered"
-        type="date"
-        {...register("eventAt")}
-      />
-      <input
-        className="btn btn-sm btn-primary w-fit self-end"
-        type="submit"
-      />
-    </form>
-  )
-}
-
-interface PersonalProps {
-  data: Prediction[]
-}
-
-const PredictionsPersonal: React.FC<PersonalProps> = ({ data }) => {
-  const remove = trpc.useMutation(["predictions.remove"])
-
-  return (
-    <>
-      <p>My predictions</p>
-      <div className="w-full flex flex-col gap-2">
-        {data.map(p =>
-          <div
-            className="flex flex-col p-4 border-2"
-            key={p.id}
-          >
-            <p>{p.userId}</p>
-            <p>{p.body}</p>
-            <button onClick={() => remove.mutate({ id: p.id })}>remove</button>
-          </div>
-        )}
-      </div>
-    </>
-  )
-};
-
-const useGetPastPredictions = () => {
-  const q = trpc.useInfiniteQuery(
-    [
-      "predictions.past",
-      {
-        limit: 20,
-      },
-    ],
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
-
-  return q
-}
-
-const PredictionsAll: React.FC = () => {
-  const queryPast = useGetPastPredictions();
-  const remove = trpc.useMutation(["predictions.remove"])
-
-  return (
-    <div className="flex flex-col">
-      <p>All Predictions</p>
-      {queryPast.data?.pages.map(p =>
-        <div
-          className="flex flex-col gap-2"
-          key={p.nextCursor}
-        >
-          {p.items.map(v =>
-            <div key={v.id}>
-              <p>{v.userId}</p>
-              <p>{v.body}</p>
-              <button onClick={() => remove.mutate({ id: v.id })}>remove</button>
-            </div>
-          )}
-        </div>
-      )}
-      {queryPast.hasNextPage &&
-        <button
-          className="btn btn-ghost"
-          onClick={() => queryPast.fetchNextPage()}
-        >
-          more
-        </button>}
-    </div>
-  )
-}
-
-const PredictionsView: React.FC = () => {
-  const { data, isLoading, refetch } = trpc.useQuery(["predictions.personal"])
-
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <PredictionCreate refetch={refetch} />
-      {isLoading || !data
-        ? <div>loading</div>
-        : <PredictionsPersonal data={data} />
-      }
-    </div>
-  )
-}
+import LoginView from "../components/LoginView";
+import PredictionsAllPast from "../components/PredictionsAllPast";
+import PredictionCreate from "../components/PredictionCreate";
+import PredictionsPersonal from "../components/PredictionsPersonal";
 
 const Home: NextPage = () => {
   const { data, status } = useSession();
@@ -171,6 +20,7 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="w-full max-w-screen-md mx-auto h-fit flex flex-col gap-4 p-2">
+        
         <main className="flex flex-col items-center gap-2 p-4 border-2">
           <h1>Augur</h1>
           <p>A place for users to place predictions about the future</p>
@@ -179,11 +29,15 @@ const Home: NextPage = () => {
         {status === "loading"
           ? <div>loading</div>
           : data
-            ? <PredictionsView />
+            ?
+            <div className="flex flex-col items-center gap-4">
+              <PredictionCreate />
+              <PredictionsPersonal />
+            </div>
             : <LoginView />
         }
 
-        <PredictionsAll />
+        <PredictionsAllPast />
       </div>
     </>
   );

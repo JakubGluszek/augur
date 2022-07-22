@@ -4,7 +4,7 @@ import { createRouter } from "./context";
 
 export const predictionRouter = createRouter()
   // return a paginated response of predictions which eventAt date <= today's date
-  .query("past", {
+  .query("all-past", {
     input: z.object({
       limit: z.number().min(1).max(100).nullish(),
       cursor: z.string().nullish(),
@@ -19,6 +19,15 @@ export const predictionRouter = createRouter()
         where: {
           eventAt: {
             lte: new Date()
+          }
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true
+            }
           }
         },
         orderBy: {
@@ -111,6 +120,15 @@ export const predictionRouter = createRouter()
       const predictions = await ctx.prisma.prediction.findMany({
         where: {
           userId: ctx.session?.user?.id
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true
+            }
+          }
         },
         orderBy: {
           id: "desc"
