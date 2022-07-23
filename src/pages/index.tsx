@@ -28,8 +28,11 @@ const Home: NextPage = () => {
         onClose={() => setViewCreate(false)}
         title="Place a prediction"
       >
-        <PredictionCreate setDisplay={setViewCreate} />
-        <p className="opacity-60">The prediction will become visible to other users on the predicted event day and after.</p>
+        <div className="flex flex-col gap-2">
+          <PredictionCreate setDisplay={setViewCreate} />
+          <p>It is nearly impossible to predict an event exactly down to the day, but hey, the closer the better!</p>
+          <p className="opacity-60">The prediction will become visible to other users on the predicted event day and forever after.</p>
+        </div>
       </Modal>
 
       <div className="w-full max-w-screen-md mx-auto h-fit flex flex-col gap-4 p-2">
