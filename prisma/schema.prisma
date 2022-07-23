@@ -10,10 +10,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id String @id @default(cuid())
-}
-
 model Prediction {
     id          String   @id @default(cuid())
     body        String   @db.Text

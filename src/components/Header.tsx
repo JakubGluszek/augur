@@ -4,6 +4,8 @@ import React from "react";
 import LoginView from "./LoginView";
 import { HiOutlineColorSwatch } from "react-icons/hi";
 import Themes from "./Themes";
+import { trpc } from "../utils/trpc";
+import { showNotification } from "@mantine/notifications";
 
 interface Props {
   user: {
@@ -15,6 +17,20 @@ interface Props {
 }
 
 const Header: React.FC<Props> = ({ user }) => {
+  const deleteAccount = trpc.useMutation(["user.delete"])
+
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount.mutateAsync();
+      showNotification({
+        color: "green",
+        message: "Account deleted"
+      })
+      signOut()
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -50,6 +66,14 @@ const Header: React.FC<Props> = ({ user }) => {
                     onClick={() => signOut()}
                   >
                     Logout
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => handleDeleteAccount()}
+                  >
+                    Delete account
                   </button>
                 </li>
               </ul>
