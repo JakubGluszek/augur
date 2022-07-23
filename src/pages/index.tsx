@@ -19,6 +19,7 @@ const Home: NextPage = () => {
     <>
       <Head>
         <title>Augur</title>
+        <meta name="google-site-verification" content="7QPRR4rGCp-mOw0KEFF5iCeJbiTKEo7POqBwXguUY7c" />
         <meta name="description" content="A platform for users to place predictions about the future" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
