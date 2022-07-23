@@ -1,6 +1,8 @@
 <!-- About the Project -->
 ## :star2: About the Project
 
+A platform for users to place predictions about the future.
+
 This is my first project using the T3 stack. I found it to be very intuitive and the experience was fun. I'm gonna dive into the docs to learn more about this stack.
 
 <!-- Screenshots -->
@@ -112,7 +114,7 @@ Contributions are always welcome!
 <!-- Contact -->
 ## :handshake: Contact
 
-Jakub Gluszek - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Jakub Gluszek - jacobgluszek03@gmail.com
 
 Project Link: [https://github.com/JakubGluszek/augur](https://github.com/JakubGluszek/augur)
 
