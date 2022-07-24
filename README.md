@@ -1,3 +1,4 @@
+# Incedo
 <!-- About the Project -->
 ## :star2: About the Project
 
@@ -96,11 +97,6 @@ Start the server
 ```bash
   npm run dev
 ```
-
-<!-- Roadmap -->
-## :compass: Roadmap
-
-- [ ] Sort predictions
 
 <!-- Contributing -->
 ## :wave: Contributing

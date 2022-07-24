@@ -9,6 +9,7 @@ import PredictionsPersonal from "../components/PredictionsPersonal";
 import Header from "../components/Header";
 import PredictionCreate from "../components/PredictionCreate";
 import { useWindowScroll } from "@mantine/hooks";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const { data, status } = useSession();
@@ -82,6 +83,11 @@ const Home: NextPage = () => {
             )}
           </Transition>
         </Affix>
+
+        <footer className="bg-base-200 rounded p-2">
+          <p>Quick build by Jakub Gluszek</p>
+          <p className="link"><Link href="https://github.com/JakubGluszek/augur">Source Code</Link></p>
+        </footer>
       </div>
     </>
   );
