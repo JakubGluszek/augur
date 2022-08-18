@@ -10,7 +10,7 @@ This is my first project using the T3 stack. I found it to be very intuitive and
 ### :camera: Screenshots
 
 <div align="center">
-  <img src="https://i2.paste.pics/HRS76.png?trs=462b4d91183ee36de6f0615703e04876e684876226435ddc302bb925629b67b1" alt="screenshot" />
+  <img src="https://ibb.co/5nJGnVw" alt="screenshot" />
 </div>
 
 <!-- TechStack -->
