@@ -1,4 +1,4 @@
-# Incedo
+# Augur
 <!-- About the Project -->
 ## :star2: About the Project
 
